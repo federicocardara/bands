@@ -4,5 +4,5 @@ public interface Genre {
     int getId();
     void setId(int id);
     String getDescription();
-    void setDescription();
+    void setDescription(String description);
 }

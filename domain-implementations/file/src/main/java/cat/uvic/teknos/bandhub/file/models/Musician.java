@@ -3,11 +3,13 @@ package cat.uvic.teknos.bandhub.file.models;
 import cat.uvic.teknos.bandhub.models.Genre;
 import cat.uvic.teknos.bandhub.models.Instrument;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public class Musician implements cat.uvic.teknos.bandhub.models.Musician {
+public class Musician implements cat.uvic.teknos.bandhub.models.Musician, Serializable {
     private int id;
     private Genre genre;
+
     @Override
     public int getId() {
         return id;

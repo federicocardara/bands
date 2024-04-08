@@ -11,11 +11,11 @@ import java.util.function.Function;
 public class MusicianRepository  implements cat.uvic.teknos.bandhub.repositories.MusicianRepository {
     private static Map<Integer, Musician> musicians = new HashMap<>();
 
-    public static void load() {
-        try(var inputStream = new ObjectInputStream(new FileInputStream(""))) {
+    static void load() {
+        var dataDirectory = System.getProperty("user.dir") + "/src/main/resources/data/";
+
+        try(var inputStream = new ObjectInputStream(new FileInputStream(dataDirectory + "musicians.ser"))) {
            musicians = (Map<Integer, Musician>) inputStream.readObject();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
@@ -23,8 +23,10 @@ public class MusicianRepository  implements cat.uvic.teknos.bandhub.repositories
         }
     }
 
-    public static void write() {
-        try(var outputStream = new ObjectOutputStream(new FileOutputStream(""))) {
+    static void write() {
+        var dataDirectory = System.getProperty("user.dir") + "/src/main/resources/data/";
+
+        try(var outputStream = new ObjectOutputStream(new FileOutputStream(dataDirectory + "musicians.ser"))) {
             outputStream.writeObject(musicians);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -38,10 +40,14 @@ public class MusicianRepository  implements cat.uvic.teknos.bandhub.repositories
         if (model.getId() <= 0) {
             // get new id
             var newId = musicians.keySet().stream().mapToInt(k -> k).max().orElse(0) + 1;
+            model.setId(newId);
+
             musicians.put(newId, model);
         } else {
             musicians.put(model.getId(), model);
         }
+
+        write();
     }
 
     @Override
@@ -51,7 +57,8 @@ public class MusicianRepository  implements cat.uvic.teknos.bandhub.repositories
 
     @Override
     public Musician get(Integer id) {
-        return null;
+
+        return musicians.get(id);
     }
 
     @Override
