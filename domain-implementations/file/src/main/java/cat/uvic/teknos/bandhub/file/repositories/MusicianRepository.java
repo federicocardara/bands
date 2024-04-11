@@ -6,15 +6,21 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 public class MusicianRepository  implements cat.uvic.teknos.bandhub.repositories.MusicianRepository {
-    private static Map<Integer, Musician> musicians = new HashMap<>();
+    private Map<Integer, Musician> musicians = new HashMap<>();
+    private final String dataPath;
 
-    static void load() {
-        var dataDirectory = System.getProperty("user.dir") + "/src/main/resources/data/";
+    public MusicianRepository(String dataPath) {
+        this.dataPath = dataPath;
 
-        try(var inputStream = new ObjectInputStream(new FileInputStream(dataDirectory + "musicians.ser"))) {
+        load();
+    }
+
+    void load() {
+        //var dataDirectory = System.getProperty("user.dir") + "/src/main/resources/data/";
+
+        try(var inputStream = new ObjectInputStream(new FileInputStream(dataPath))) {
            musicians = (Map<Integer, Musician>) inputStream.readObject();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -23,10 +29,8 @@ public class MusicianRepository  implements cat.uvic.teknos.bandhub.repositories
         }
     }
 
-    static void write() {
-        var dataDirectory = System.getProperty("user.dir") + "/src/main/resources/data/";
-
-        try(var outputStream = new ObjectOutputStream(new FileOutputStream(dataDirectory + "musicians.ser"))) {
+    void write() {
+        try(var outputStream = new ObjectOutputStream(new FileOutputStream(dataPath))) {
             outputStream.writeObject(musicians);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -44,6 +48,9 @@ public class MusicianRepository  implements cat.uvic.teknos.bandhub.repositories
 
             musicians.put(newId, model);
         } else {
+            if (musicians.get(model.getId()) == null) {
+                throw new RuntimeException("Musician with id " + model.getId() + " not found");
+            }
             musicians.put(model.getId(), model);
         }
 
@@ -63,7 +70,7 @@ public class MusicianRepository  implements cat.uvic.teknos.bandhub.repositories
 
     @Override
     public Set<Musician> getAll() {
-        return null;
+        return Set.copyOf(musicians.values());
     }
 
     @Override
