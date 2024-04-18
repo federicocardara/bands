@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = "bands"
-include("app", "domain", "utilities", ":domain-implementations:file")
+include("app", "domain", "utilities", ":domain-implementations:file", ":domain-implementations:jdbc")
